@@ -12,7 +12,7 @@
 
 1. Введите команду в терминале `docker build -t kivboard:v1 .`
 2. Введите команду в терминале `docker run -d -p 8080:8080 kivboard`
-3. Surf to http://YOURIP:8080
+3. Перейдите по ссылке http://localhost:8080
 
 ## Комбинации клавиш
 
