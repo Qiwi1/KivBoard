@@ -1,5 +1,5 @@
 /**
- * Helper to extract the correct throttling values based on the config and the number of user
+ * Помощник для извлечения правильных значений регулирования на основе конфигурации и количества пользователей.
  *
  * @param {Array.<{fromUserCount: number, minDistDelta: number, maxFreq: number}>} pointerEventsThrottling
  * @param {number} userCount

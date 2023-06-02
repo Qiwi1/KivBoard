@@ -1,4 +1,4 @@
-//This file is only for saving the whiteboard.
+//Этот файл предназначен только для сохранения доски.
 const fs = require("fs");
 const config = require("./config/config");
 const { getSafeFilePath } = require("./utils");
@@ -9,18 +9,18 @@ var savedUndos = {};
 var saveDelay = {};
 
 if (config.backend.enableFileDatabase) {
-    // make sure that folder with saved boards exists
+    // Убедитесь, что папка с сохраненными досками существует
     fs.mkdirSync(FILE_DATABASE_FOLDER, {
-        // this option also mutes an error if path exists
+        // Эта опция также отключает ошибку, если путь существует
         recursive: true,
     });
 }
 
 /**
- * Get the file path for a whiteboard.
- * @param {string} wid Whiteboard id to get the path for
- * @returns {string} File path to the whiteboard
- * @throws {Error} if wid contains potentially unsafe directory characters
+ * Получение пути к файлу доски.
+ * @param {string} 
+ * @returns {string} 
+ * @throws {Error} 
  */
 function fileDatabasePath(wid) {
     return getSafeFilePath(FILE_DATABASE_FOLDER, wid + ".json");
@@ -28,21 +28,21 @@ function fileDatabasePath(wid) {
 
 module.exports = {
     handleEventsAndData: function (content) {
-        var tool = content["t"]; //Tool witch is used
-        var wid = content["wid"]; //whiteboard ID
+        var tool = content["t"]; //Инструмен, который используется
+        var wid = content["wid"]; //ID доски
         var username = content["username"];
         if (tool === "clear") {
-            //Clear the whiteboard
+            //Очищение доски
             delete savedBoards[wid];
             delete savedUndos[wid];
-            // delete the corresponding file too
+            // Удаление файла
             fs.unlink(fileDatabasePath(wid), function (err) {
                 if (err) {
                     return console.log(err);
                 }
             });
         } else if (tool === "undo") {
-            //Undo an action
+            //Отмена действия
             if (!savedUndos[wid]) {
                 savedUndos[wid] = [];
             }
@@ -106,11 +106,11 @@ module.exports = {
             ].includes(tool)
         ) {
             let savedBoard = this.loadStoredData(wid);
-            //Save all this actions
-            delete content["wid"]; //Delete id from content so we don't store it twice
+            //Сохранение всех действий
+            delete content["wid"]; //Удаление идентификатора из контента, чтобы не хранить его дважды
             if (tool === "setTextboxText") {
                 for (var i = savedBoard.length - 1; i >= 0; i--) {
-                    //Remove old textbox tex -> dont store it twice
+                    //Удаление старого текста текстового поля -> не сохранять его дважды
                     if (
                         savedBoard[i]["t"] === "setTextboxText" &&
                         savedBoard[i]["d"][0] === content["d"][0]
@@ -125,7 +125,7 @@ module.exports = {
     },
     saveToDB: function (wid) {
         if (config.backend.enableFileDatabase) {
-            //Save whiteboard to file
+            //Сохранение доски в файл
             if (!saveDelay[wid]) {
                 saveDelay[wid] = true;
                 setTimeout(function () {
@@ -141,11 +141,11 @@ module.exports = {
                             }
                         );
                     }
-                }, 1000 * 10); //Save after 10 sec
+                }, 1000 * 10);
             }
         }
     },
-    // Load saved whiteboard
+    // Загузка сохраненной доски
     loadStoredData: function (wid) {
         if (wid in savedBoards) {
             return savedBoards[wid];
@@ -153,9 +153,7 @@ module.exports = {
 
         savedBoards[wid] = [];
 
-        // try to load from DB
         if (config.backend.enableFileDatabase) {
-            //read saved board from file
             var filePath = fileDatabasePath(wid);
             if (fs.existsSync(filePath)) {
                 var data = fs.readFileSync(filePath);

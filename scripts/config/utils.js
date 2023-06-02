@@ -8,7 +8,7 @@ const ajv = new Ajv({ allErrors: true });
 const configSchema = require("./config-schema.json");
 
 /**
- * Load a yaml config file from a given path.
+ * Загрузка файла конфигурации yaml по заданному пути.
  *
  * @param path
  * @return {Object}
@@ -18,7 +18,7 @@ function getConfig(path) {
 }
 
 /**
- * Check that a config object is valid.
+ * Проверяет, что объект конфигурации действителен.
  *
  * @param {Object} config Config object
  * @param {boolean} warn Should we warn in console for errors
@@ -51,7 +51,7 @@ function isConfigValid(config, warn = true) {
 }
 
 /**
- * Load the default project config
+ * Загружает конфигурацию проекта по умолчанию
  * @return {Object}
  */
 function getDefaultConfig() {
@@ -60,10 +60,6 @@ function getDefaultConfig() {
 }
 
 /**
- * Deep merge of project config
- *
- * Objects are merged, not arrays
- *
  * @param baseConfig
  * @param overrideConfig
  * @return {Object}

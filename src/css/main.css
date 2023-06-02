@@ -21,15 +21,15 @@ body {
     background: transparent;
     border: 2px solid #636060;
     margin: -1px;
-    /* Green border */
+    /* Черные гранциы */
     color: black;
-    /* White text */
+    /* Белый текст */
     padding: 11px 14px;
-    /* Some padding */
+    /* Дополнения */
     cursor: pointer;
-    /* Pointer/hand icon */
+    /* Кнопка мыши */
     float: left;
-    /* Float the buttons side by side */
+    
 }
 
 @media (max-device-width: 1024px) {
@@ -71,14 +71,12 @@ button::-moz-focus-inner {
 }
 
 /*
- * Deactivate all pointer events on all the children
- * of a group when it's disabled.
+    Отключение всех событий когда панель выключена
  */
 .whiteboard-edit-group.group-disabled > * {
     pointer-events: none;
 }
 
-/* Clear floats (clearfix hack) */
 
 .btn-group:after {
     content: "";
@@ -86,7 +84,7 @@ button::-moz-focus-inner {
     display: table;
 }
 
-/* Add a background color on hover */
+/* Добавление цвета фона при наведении */
 
 .btn-group button:hover {
     background-color: #9a9a9a;

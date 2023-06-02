@@ -2,14 +2,14 @@ const { v4: uuidv4 } = require("uuid");
 
 class ReadOnlyBackendService {
     /**
-     * Mapping from an editable whiteboard id to the matching read-only whiteboard id
+     * Сопоставление редактируемого идентификатора доски с соответствующим идентификатором доски только для чтения
      * @type {Map<string, string>}
      * @private
      */
     _idToReadOnlyId = new Map();
 
     /**
-     * Mapping from a read-only whiteboard id to the matching editable whiteboard id
+     * Сопоставление идентификатора доски, доступного только для чтения, с соответствующим идентификатором редактируемой доски.
      *
      * @type {Map<string, string>}
      * @private
@@ -17,9 +17,9 @@ class ReadOnlyBackendService {
     _readOnlyIdToId = new Map();
 
     /**
-     * Make sure a whiteboardId is ignited in the service
+     * Убедитесь, что в сервисе активирован whiteboardId.
      *
-     * If it's not found in the service, we assume that it's an editable whiteboard
+     * Если он не найден в сервисе, сайт будет думать, что это редактируемая доска.
      *
      * @param {string} whiteboardId
      */
@@ -35,21 +35,18 @@ class ReadOnlyBackendService {
     }
 
     /**
-     * Get the read-only id corresponding to a whiteboard id
+     * Получение идентификатора только для чтения, соответствующий идентификатору доски
      *
      * @param {string} whiteboardId
      * @return {string}
      */
     getReadOnlyId(whiteboardId) {
-        // make sure it's inited
         if (this.isReadOnly(whiteboardId)) return whiteboardId;
-        // run in isReadOnly
-        // this.init(whiteboardId);
         return this._idToReadOnlyId.get(whiteboardId);
     }
 
     /**
-     * Get the id corresponding to readonly id
+     * Получение идентификатора, соответствующий идентификатору только для чтения
      *
      * @param {string} readOnlyId
      * @return {string}
@@ -59,7 +56,7 @@ class ReadOnlyBackendService {
     }
 
     /**
-     * Tell is whiteboard id corresponds to a read-only whiteboard
+     * Сообщает, соответствует ли идентификатор доски доске только для чтения
      *
      * @param whiteboardId
      * @return {boolean}

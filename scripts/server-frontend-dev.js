@@ -1,7 +1,7 @@
 const devServerConfig = {
     hot: true,
     proxy: {
-        // proxies for the backend
+        // прокси для бэкенда
         "/api": "http://localhost:3000",
         "/uploads": "http://localhost:3000",
         "/ws-api": {
@@ -12,7 +12,6 @@ const devServerConfig = {
 };
 
 function startFrontendDevServer(port) {
-    // require here to prevent prod dependency to webpack
     const webpack = require("webpack");
     const WebpackDevServer = require("webpack-dev-server");
     const config = require("../config/webpack.dev");

@@ -15,7 +15,7 @@ const whiteboard = {
     canvas: null,
     ctx: null,
     drawcolor: "black",
-    previousToolHtmlElem: null, // useful for handling read-only mode
+    previousToolHtmlElem: null, // Подходит для работы только в режиме для чтения
     tool: "mouse",
     thickness: 4,
     /**
@@ -30,12 +30,12 @@ const whiteboard = {
     drawFlag: false,
     oldGCO: null,
     mouseover: false,
-    lineCap: "round", //butt, square
+    lineCap: "round", 
     backgroundGrid: null,
     canvasElement: null,
     cursorContainer: null,
     imgContainer: null,
-    svgContainer: null, //For draw prev
+    svgContainer: null, 
     mouseOverlay: null,
     ownCursor: null,
     penSmoothLastCoords: [],
@@ -44,9 +44,9 @@ const whiteboard = {
     svgCirle: null,
     drawBuffer: [],
     undoBuffer: [],
-    drawId: 0, //Used for undo/redo functions
+    drawId: 0, //Используется для функций отмены/возврата
     imgDragActive: false,
-    latestActiveTextBoxId: false, //The id of the latest clicked Textbox (for font and color change)
+    latestActiveTextBoxId: false,//Идентификатор последнего нажатого текстового поля (для изменения шрифта и цвета)
     pressedKeys: {},
     settings: {
         whiteboardId: "0",
@@ -67,35 +67,35 @@ const whiteboard = {
         }
         this.settings["username"] = this.settings["username"].replace(/[^0-9a-z]/gi, "");
 
-        //background grid (repeating image) and smallest screen indication
+        //фоновая сетка (повторяющееся изображение) и фиксация наименьшего экрана
         _this.backgroundGrid = $(
             `<div style="position: absolute; left:0px; top:0; opacity: 0.2; background-image:url('${_this.settings["backgroundGridUrl"]}'); height: 100%; width: 100%;"></div>`
         );
-        // container for background images
+        // Фон
         _this.imgContainer = $(
             '<div style="position: absolute; left:0px; top:0; height: 100%; width: 100%;"></div>'
         );
-        // whiteboard canvas
+        // Доска
         _this.canvasElement = $(
             '<canvas id="whiteboardCanvas" style="position: absolute; left:0px; top:0; cursor:crosshair;"></canvas>'
         );
-        // SVG container holding drawing or moving previews
+        // Контейнер SVG, содержащий рисунок или движущиеся превью
         _this.svgContainer = $(
             '<svg style="position: absolute; top:0px; left:0px;" width="100%" height="100%"></svg>'
         );
-        // drag and drop indicator, hidden by default
+        // D&D по умол. скрыт
         _this.dropIndicator = $(
             '<div style="position:absolute; height: 100%; width: 100%; border: 7px dashed gray; text-align: center; top: 0px; left: 0px; color: gray; font-size: 23em; display: none;"><i class="far fa-plus-square" aria-hidden="true"></i></div>'
         );
-        // container for other users cursors
+        // Контейнер для курсоров других пользователей
         _this.cursorContainer = $(
             '<div style="position: absolute; left:0px; top:0; height: 100%; width: 100%;"></div>'
         );
-        // container for texts by users
+        // Контейнер для текстов пользователей
         _this.textContainer = $(
             '<div class="textcontainer" style="position: absolute; left:0px; top:0; height: 100%; width: 100%; cursor:text;"></div>'
         );
-        // mouse overlay for draw callbacks
+        // Наложение мыши для обратных вызовов отрисовки
         _this.mouseOverlay = $(
             '<div id="mouseOverlay" style="cursor:none; position: absolute; left:0px; top:0; height: 100%; width: 100%;"></div>'
         );
@@ -110,7 +110,7 @@ const whiteboard = {
             .append(_this.textContainer)
             .append(_this.mouseOverlay);
 
-        // render newly added icons
+        // Обновление значков
         dom.i2svg();
 
         this.canvas = $("#whiteboardCanvas")[0];
@@ -120,13 +120,13 @@ const whiteboard = {
         this.oldGCO = this.ctx.globalCompositeOperation;
 
         window.addEventListener("resize", function () {
-            // Handle resize
-            const dbCp = JSON.parse(JSON.stringify(_this.drawBuffer)); // Copy the buffer
+            // Изменение размера курсора
+            const dbCp = JSON.parse(JSON.stringify(_this.drawBuffer)); 
             _this.canvas.width = $(window).width();
-            _this.canvas.height = $(window).height(); // Set new canvas height
+            _this.canvas.height = $(window).height(); 
             _this.drawBuffer = [];
             _this.textContainer.empty();
-            _this.loadData(dbCp); // draw old content in
+            _this.loadData(dbCp); 
         });
 
         $(_this.mouseOverlay).on("mousedown touchstart", function (e) {
@@ -231,7 +231,7 @@ const whiteboard = {
         });
 
         _this.mouseOverlay.on("mousemove touchmove", function (e) {
-            //Move hole canvas
+            //Перемещение доски
             e.preventDefault();
 
             if (_this.tool == "hand" && _this.drawFlag) {
@@ -245,13 +245,13 @@ const whiteboard = {
                 _this.startCoords.x = currentPos.x;
                 _this.startCoords.y = currentPos.y;
 
-                const dbCp = JSON.parse(JSON.stringify(_this.drawBuffer)); // Copy the buffer
+                const dbCp = JSON.parse(JSON.stringify(_this.drawBuffer)); 
                 _this.canvas.width = $(window).width();
-                _this.canvas.height = $(window).height(); // Set new canvas height
+                _this.canvas.height = $(window).height(); 
                 _this.drawBuffer = [];
                 _this.textContainer.empty();
                 _this.imgContainer.empty();
-                _this.loadData(dbCp); // draw old content in
+                _this.loadData(dbCp); 
             }
 
             if (ReadOnlyService.readOnlyActive) return;
@@ -440,9 +440,9 @@ const whiteboard = {
                         _this.sendFunction({
                             t: _this.tool,
                             d: [
-                                left - _this.viewCoords.x, //left from
+                                left - _this.viewCoords.x, 
                                 top - _this.viewCoords.y,
-                                leftT - _this.viewCoords.x, //Left too
+                                leftT - _this.viewCoords.x, 
                                 topT - _this.viewCoords.y,
                                 width,
                                 height,
@@ -469,7 +469,7 @@ const whiteboard = {
             _this.triggerMouseOver();
         });
 
-        // On text container click (Add a new textbox)
+        // Щелчок по текстовому контейнеру (Добавить новое текстовое поле)
         _this.textContainer.on("click", function (e) {
             const currentPos = Point.fromEvent(e);
             const fontsize = _this.thickness * 0.5;
@@ -500,16 +500,16 @@ const whiteboard = {
         });
     },
     /**
-     * For drawing lines at 0,45,90° ....
+     * Для рисования линий под углом 0,45,90° ....
      * @param {Point} currentPos
      * @returns {Point}
      */
     getRoundedAngles: function (currentPos) {
         const { startCoords } = this;
 
-        // these transformations operate in the standard coordinate system
-        // y goes from bottom to up, x goes left to right
-        const dx = currentPos.x - startCoords.x; // browser x is reversed
+        // Эти преобразования работают в стандартной системе координат
+        // y идет снизу вверх, x идет слева направо
+        const dx = currentPos.x - startCoords.x; // Браузер x перевернут
         const dy = startCoords.y - currentPos.y;
 
         const angle = Math.atan2(dy, dx);
@@ -530,7 +530,7 @@ const whiteboard = {
         let currentPos = Point.fromEvent(e);
 
         window.requestAnimationFrame(function () {
-            // update position
+            // Обновление позиции
             currentPos = Point.fromEvent(e);
 
             if (_this.drawFlag) {
@@ -687,7 +687,7 @@ const whiteboard = {
 
             _this.eraseRec(left, top, width, height);
         });
-        _this.mouseOverlay.find(".xCanvasBtn").click(); //Remove all current drops
+        _this.mouseOverlay.find(".xCanvasBtn").click(); 
         _this.textContainer
             .find("#" + _this.latestActiveTextBoxId)
             .find(".removeIcon")
@@ -698,7 +698,7 @@ const whiteboard = {
         if (!_this.drawFlag) {
             _this.svgContainer.empty();
         }
-        _this.mouseOverlay.find(".xCanvasBtn").click(); //Remove all current drops
+        _this.mouseOverlay.find(".xCanvasBtn").click();
     },
     pushPointSmoothPen: function (X, Y) {
         var _this = this;
@@ -874,7 +874,7 @@ const whiteboard = {
         return $(
             DOMPurify.sanitize('<img src="' + url + '">', {
                 ALLOWED_TAGS: ["img"],
-                ALLOWED_ATTR: ["src"], // kill any attributes malicious url introduced
+                ALLOWED_ATTR: ["src"],
             })
         );
     },
@@ -891,7 +891,7 @@ const whiteboard = {
         var img = this.imgWithSrc(finalURL).css({ width: "100%", height: "100%" });
         finalURL = img.attr("src");
 
-        _this.setTool("mouse"); //Set to mouse tool while dropping to prevent errors
+        _this.setTool("mouse"); //Установка мыши при опускании, чтобы предотвратить ошибки
         _this.imgDragActive = true;
         _this.mouseOverlay.css({ cursor: "default" });
         var imgDiv = $(
@@ -932,10 +932,10 @@ const whiteboard = {
                 var height = imgDiv.height();
 
                 if (draw == "1") {
-                    //draw image to canvas
+                    //Нарисовать изображение на доске
                     _this.drawImgToCanvas(finalURL, width, height, left, top, rotationAngle);
                 } else {
-                    //Add image to background
+                    //Добавка изображения на фон
                     _this.drawImgToBackground(finalURL, width, height, left, top, rotationAngle);
                 }
                 _this.sendFunction({
@@ -971,13 +971,9 @@ const whiteboard = {
         });
         imgDiv.resizable();
         var params = {
-            // Callback fired on rotation start.
             start: function (event, ui) {},
-            // Callback fired during rotation.
             rotate: function (event, ui) {
-                //console.log(ui)
             },
-            // Callback fired on rotation end.
             stop: function (event, ui) {
                 rotationAngle = ui.angle.current;
             },
@@ -985,7 +981,6 @@ const whiteboard = {
         };
         imgDiv.rotatable(params);
 
-        // render newly added icons
         dom.i2svg();
     },
     drawImgToBackground(url, width, height, left, top, rotationAngle) {
@@ -1103,7 +1098,7 @@ const whiteboard = {
             },
         });
         textBox.find(".textContent").on("input", function () {
-            var text = btoa(unescape(encodeURIComponent($(this).html()))); //Get html and make encode base64 also take care of the charset
+            var text = btoa(unescape(encodeURIComponent($(this).html()))); 
             _this.sendFunction({ t: "setTextboxText", d: [txId, text] });
         });
         textBox
@@ -1116,7 +1111,6 @@ const whiteboard = {
                 return false;
             });
         if (newLocalBox) {
-            //per https://stackoverflow.com/questions/2388164/set-focus-on-div-contenteditable-element
             setTimeout(() => {
                 textBox.find(".textContent").focus();
             }, 0);
@@ -1125,13 +1119,12 @@ const whiteboard = {
             textBox.addClass("active");
         }
 
-        // render newly added icons
         dom.i2svg();
     },
     setTextboxText(txId, text) {
         $("#" + txId)
             .find(".textContent")
-            .html(decodeURIComponent(escape(atob(text)))); //Set decoded base64 as html
+            .html(decodeURIComponent(escape(atob(text)))); 
     },
     removeTextbox(txId) {
         $("#" + txId).remove();
@@ -1158,8 +1151,8 @@ const whiteboard = {
             .css({ "background-color": textboxBackgroundColor });
     },
     drawImgToCanvas(url, width, height, left, top, rotationAngle, doneCallback) {
-        top = Number(top); // probably not as important here
-        left = Number(left); // as it is when generating html
+        top = Number(top);
+        left = Number(left);
         width = Number(width);
         height = Number(height);
         rotationAngle = Number(rotationAngle);
@@ -1191,10 +1184,9 @@ const whiteboard = {
             }
         };
 
-        img.src = this.imgWithSrc(url).attr("src"); // or here - but consistent
+        img.src = this.imgWithSrc(url).attr("src");
     },
     undoWhiteboard: function (username) {
-        //Not call this directly because you will get out of sync whith others...
         var _this = this;
         if (!username) {
             username = _this.settings.username;
@@ -1220,11 +1212,9 @@ const whiteboard = {
         _this.canvas.height = _this.canvas.height;
         _this.imgContainer.empty();
         _this.loadDataInSteps(_this.drawBuffer, false, function (stepData) {
-            //Nothing to do
         });
     },
     redoWhiteboard: function (username) {
-        //Not call this directly because you will get out of sync whith others...
         var _this = this;
         if (!username) {
             username = _this.settings.username;
@@ -1247,7 +1237,6 @@ const whiteboard = {
         _this.canvas.height = _this.canvas.height;
         _this.imgContainer.empty();
         _this.loadDataInSteps(_this.drawBuffer, false, function (stepData) {
-            //Nothing to do
         });
     },
     undoWhiteboardClick: function () {
@@ -1264,7 +1253,7 @@ const whiteboard = {
         this.tool = tool;
         if (this.tool === "text" || this.tool === "stickynote") {
             $(".textBox").addClass("active");
-            this.textContainer.appendTo($(whiteboardContainer)); //Bring textContainer to the front
+            this.textContainer.appendTo($(whiteboardContainer)); //Перемещение контейнера с текстом на передний план
             $(".textContent").attr("contenteditable", "true");
         } else {
             $(".textBox").removeClass("active");
@@ -1332,7 +1321,7 @@ const whiteboard = {
         window.requestAnimationFrame(function () {
             if (tool === "line" || tool === "pen") {
                 if (data.length == 4) {
-                    //Only used for old json imports
+                    //Используется только для старого импорта json
                     _this.drawPenLine(data[0], data[1], data[2], data[3], color, thickness, true);
                 } else {
                     _this.drawPenSmoothLine(data, color, thickness, true);
@@ -1484,24 +1473,23 @@ const whiteboard = {
         brackGroundImg.src = _this.settings.backgroundGridUrl;
 
         brackGroundImg.onload = function () {
-            var destCtx = copyCanvas.getContext("2d"); //Draw the maincanvas to the exportcanvas
+            var destCtx = copyCanvas.getContext("2d"); //Отрисовка основной доски на экспортной доске
 
             if (imageFormat === "jpeg") {
-                //Set white background for jpeg images
+                //Установка белого фона для jpeg-изображений
                 destCtx.fillStyle = "#FFFFFF";
                 destCtx.fillRect(0, 0, width, height);
             }
 
             if (drawBackgroundGrid) {
                 destCtx.globalAlpha = 0.8;
-                var ptrn = destCtx.createPattern(brackGroundImg, "repeat"); // Create a pattern with this image, and set it to "repeat".
+                var ptrn = destCtx.createPattern(brackGroundImg, "repeat");
                 destCtx.fillStyle = ptrn;
-                destCtx.fillRect(0, 0, copyCanvas.width, copyCanvas.height); // context.fillRect(x, y, width, height);
+                destCtx.fillRect(0, 0, copyCanvas.width, copyCanvas.height);
                 destCtx.globalAlpha = 1;
             }
 
             $.each(_this.imgContainer.find("img"), function () {
-                //Draw Backgroundimages to the export canvas
                 var width = $(this).width();
                 var height = $(this).height();
                 var p = $(this).position();
@@ -1510,12 +1498,11 @@ const whiteboard = {
                 destCtx.drawImage(this, left, top, width, height);
             });
 
-            //Copy drawings
             destCtx.drawImage(_this.canvas, 0, 0);
 
             var textBoxCnt = 0;
             $.each($(".textBox"), function () {
-                //Draw the text on top
+                //Создание текста повверх доски
                 textBoxCnt++;
 
                 var textContainer = $(this);
@@ -1590,7 +1577,6 @@ const whiteboard = {
         _this.loadDataInSteps(content, false, function (stepData, index) {
             _this.sendFunction(stepData);
             if (index >= content.length - 1) {
-                //Done with all data
                 _this.drawId++;
                 if (doneCallback) {
                     doneCallback();
@@ -1599,7 +1585,7 @@ const whiteboard = {
         });
     },
     sendFunction: function (content) {
-        //Sends every draw to server
+        //Отправка каждого запроса на сервер
         var _this = this;
         content["wid"] = _this.settings.whiteboardId;
         content["username"] = _this.settings.username;
@@ -1632,14 +1618,14 @@ const whiteboard = {
         }
     },
     refreshCursorAppearance() {
-        //Set cursor depending on current active tool
+        //Установка курсора в зависимости от текущего активного инструмента
         var _this = this;
         if (_this.tool === "pen" || _this.tool === "eraser") {
             _this.mouseOverlay.css({ cursor: "none" });
         } else if (_this.tool === "mouse") {
             this.mouseOverlay.css({ cursor: "default" });
         } else {
-            //Line, Rec, Circle, Cutting
+            //Линиия, квадрат, круг, ластик
             _this.mouseOverlay.css({ cursor: "crosshair" });
         }
     },
@@ -1685,8 +1671,6 @@ function testImage(url, callback, timeout) {
     img.src = url;
     timer = setTimeout(function () {
         timedOut = true;
-        // reset .src to invalid URL so it stops previous
-        // loading, but doesn't trigger new load
         img.src = "//!!!!/test.jpg";
         callback(false);
     }, timeout);

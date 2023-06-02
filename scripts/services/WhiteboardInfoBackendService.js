@@ -2,7 +2,7 @@ const config = require("../config/config");
 const ReadOnlyBackendService = require("./ReadOnlyBackendService");
 
 /**
- * Class to hold information related to a whiteboard
+ * Класс для хранения информации, связанной с доской
  */
 class WhiteboardInfo {
     static defaultScreenResolution = { w: 1000, h: 1000 };
@@ -26,7 +26,7 @@ class WhiteboardInfo {
     }
 
     /**
-     * Variable to tell if these info have been sent or not
+     * Переменная, чтобы узнать, были ли отправлены эти данные или нет
      *
      * @private
      * @type {boolean}
@@ -51,7 +51,7 @@ class WhiteboardInfo {
     }
 
     /**
-     * Store information about the client's screen resolution
+     * Хранение информации о разрешении экрана пользователя
      *
      * @param {string} clientId
      * @param {number} w client's width
@@ -63,7 +63,7 @@ class WhiteboardInfo {
     }
 
     /**
-     * Delete the stored information about the client's screen resoltion
+     * Удаление сохраненной информации о разрешении экрана пользователя
      * @param clientId
      */
     deleteScreenResolutionOfClient(clientId) {
@@ -72,7 +72,7 @@ class WhiteboardInfo {
     }
 
     /**
-     * Get the smallest client's screen size on a whiteboard
+     * Получение наименьшего размера экрана пользователя на доске
      * @return {{w: number, h: number}}
      */
     getSmallestScreenResolution() {
@@ -104,9 +104,7 @@ class WhiteboardInfo {
     }
 }
 
-/**
- * Wrapper class around map to treat both the editable whiteboard and its read-only version the same
- */
+
 class InfoByWhiteBoardMap extends Map {
     get(wid) {
         const readOnlyId = ReadOnlyBackendService.getReadOnlyId(wid);
@@ -136,23 +134,23 @@ class WhiteboardInfoBackendService {
     #infoByWhiteboard = new InfoByWhiteBoardMap();
 
     /**
-     * Start the auto sending of information to all the whiteboards
+     * Запускает автоматическую отправку информации на все доски
      *
      * @param io
      */
     start(io) {
-        // auto clean infoByWhiteboard
+        // автоматическая очистка информации ByWhiteboard
         setInterval(() => {
             this.#infoByWhiteboard.forEach((info, readOnlyWhiteboardId) => {
                 if (info.shouldSendInfo()) {
-                    // broadcast to editable whiteboard
+                    // трансляция на редактируемую доску
                     const wid = ReadOnlyBackendService.getIdFromReadOnlyId(readOnlyWhiteboardId);
                     io.sockets
                         .in(wid)
                         .compress(false)
                         .emit("whiteboardInfoUpdate", info.asObject());
 
-                    // also send to readonly whiteboard
+                    // также отправка на доску только для чтения
                     io.sockets
                         .in(readOnlyWhiteboardId)
                         .compress(false)
@@ -165,7 +163,7 @@ class WhiteboardInfoBackendService {
     }
 
     /**
-     * Track a join event of client to a whiteboard
+     * Отслеживание события присоединения пользователя к доске
      *
      * @param {string} clientId
      * @param {string} whiteboardId
@@ -184,7 +182,7 @@ class WhiteboardInfoBackendService {
     }
 
     /**
-     * Set the screen resolution of a client
+     * Установка разрешение экрана пользователя
      * @param {string} clientId
      * @param {string} whiteboardId
      * @param {{w: number, h: number}} screenResolution
@@ -202,7 +200,6 @@ class WhiteboardInfoBackendService {
     }
 
     /**
-     * Track disconnect from a client
      * @param {string} clientId
      * @param {string} whiteboardId
      */
@@ -226,7 +223,7 @@ class WhiteboardInfoBackendService {
     }
 
     /**
-     * Get the number of clients on a whiteboard
+     * Получение количество пользователей на доске
      *
      * @param {string} wid
      * @returns number|null

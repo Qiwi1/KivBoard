@@ -8,9 +8,9 @@ const { getSafeFilePath } = require("./utils");
 function startBackendServer(port) {
     var fs = require("fs-extra");
     var express = require("express");
-    var formidable = require("formidable"); //form upload processing
+    var formidable = require("formidable"); //Обработка загрузки формы
 
-    const createDOMPurify = require("dompurify"); //Prevent xss
+    const createDOMPurify = require("dompurify"); 
     const { JSDOM } = require("jsdom");
     const window = new JSDOM("").window;
     const DOMPurify = createDOMPurify(window);
@@ -30,38 +30,16 @@ function startBackendServer(port) {
 
     const { accessToken, enableWebdav } = config.backend;
 
-    //Expose static folders
     app.use(express.static(path.join(__dirname, "..", "dist")));
     app.use("/uploads", express.static(path.join(__dirname, "..", "public", "uploads")));
 
-    /**
-     * @api {get} /api/health Health Check
-     * @apiDescription This returns nothing but a status code of 200
-     * @apiName health
-     * @apiGroup WhiteboardAPI
-     *
-     * @apiSuccess {Number} 200 OK
-     */
+
     app.get("/api/health", function (req, res) {
         res.status(200); //OK
         res.end();
     });
 
-    /**
-     * @api {get} /api/loadwhiteboard Get Whiteboard Data
-     * @apiDescription This returns all the Available Data ever drawn to this Whiteboard
-     * @apiName loadwhiteboard
-     * @apiGroup WhiteboardAPI
-     *
-     * @apiParam {Number} wid WhiteboardId you find in the Whiteboard URL
-     * @apiParam {Number} [at] Accesstoken (Only if activated for this server)
-     *
-     * @apiSuccess {String} body returns the data as JSON String
-     * @apiError {Number} 401 Unauthorized
-     *
-     * @apiExample {curl} Example usage:
-     *     curl -i http://[rootUrl]/api/loadwhiteboard?wid=[MyWhiteboardId]
-     */
+
     app.get("/api/loadwhiteboard", function (req, res) {
         let query = escapeAllContentStrings(req["query"]);
         const wid = query["wid"];
@@ -74,26 +52,12 @@ function startBackendServer(port) {
             res.send(ret);
             res.end();
         } else {
-            res.status(401); //Unauthorized
+            res.status(401); //Неавторизованный
             res.end();
         }
     });
 
-    /**
-     * @api {get} /api/getReadOnlyWid Get the readOnlyWhiteboardId
-     * @apiDescription This returns the readOnlyWhiteboardId for a given WhiteboardId
-     * @apiName getReadOnlyWid
-     * @apiGroup WhiteboardAPI
-     *
-     * @apiParam {Number} wid WhiteboardId you find in the Whiteboard URL
-     * @apiParam {Number} [at] Accesstoken (Only if activated for this server)
-     *
-     * @apiSuccess {String} body returns the readOnlyWhiteboardId as text
-     * @apiError {Number} 401 Unauthorized
-     *
-     * @apiExample {curl} Example usage:
-     *     curl -i http://[rootUrl]/api/getReadOnlyWid?wid=[MyWhiteboardId]
-     */
+ 
     app.get("/api/getReadOnlyWid", function (req, res) {
         let query = escapeAllContentStrings(req["query"]);
         const wid = query["wid"];
@@ -102,29 +66,15 @@ function startBackendServer(port) {
             res.send(ReadOnlyBackendService.getReadOnlyId(wid));
             res.end();
         } else {
-            res.status(401); //Unauthorized
+            res.status(401); //Неавторизованный
             res.end();
         }
     });
 
-    /**
-     * @api {post} /api/upload Upload Images
-     * @apiDescription Upload Image to the server. Note that you need to add the image to the board after upload by calling "drawToWhiteboard" with addImgBG set as tool
-     * @apiName upload
-     * @apiGroup WhiteboardAPI
-     *
-     * @apiParam {Number} wid WhiteboardId you find in the Whiteboard URL
-     * @apiParam {Number} [at] Accesstoken (Only if activated for this server)
-     * @apiParam {Number} [date] current timestamp (This is for the filename on the server; Don't set it if not sure)
-     * @apiParam {Boolean} [webdavaccess] set true to upload to webdav (Optional; Only if activated for this server)
-     * @apiParam {String} imagedata The imagedata base64 encoded
-     *
-     * @apiSuccess {String} body returns "done"
-     * @apiError {Number} 401 Unauthorized
-     */
+
     app.post("/api/upload", function (req, res) {
-        //File upload
-        var form = new formidable.IncomingForm(); //Receive form
+        //Загрузка файла
+        var form = new formidable.IncomingForm(); //Получение формы
         var formData = {
             files: {},
             fields: {},
@@ -157,67 +107,34 @@ function startBackendServer(port) {
                     }
                 });
             } else {
-                res.status(401); //Unauthorized
+                res.status(401); //Неавторизованный
                 res.end();
             }
-            //End file upload
+            //Завершить загрузку файла
         });
         form.parse(req);
     });
 
-    /**
-     * @api {get} /api/drawToWhiteboard Draw on the Whiteboard
-     * @apiDescription Function draw on whiteboard with different tools and more...
-     * @apiName drawToWhiteboard
-     * @apiGroup WhiteboardAPI
-     *
-     * @apiParam {Number} wid WhiteboardId you find in the Whiteboard URL
-     * @apiParam {Number} [at] Accesstoken (Only if activated for this server)
-     * @apiParam {String} t The tool you want to use:  "line",
-     * "pen",
-     * "rect",
-     * "circle",
-     * "eraser",
-     * "addImgBG",
-     * "recSelect",
-     * "eraseRec",
-     * "addTextBox",
-     * "setTextboxText",
-     * "removeTextbox",
-     * "setTextboxPosition",
-     * "setTextboxFontSize",
-     * "setTextboxFontColor"
-     * @apiParam {String} [username] The username performing this action. Only relevant for the undo/redo function
-     * @apiParam {Number} [draw] Only has a function if t is set to "addImgBG". Set 1 to draw on canvas; 0  to draw into background
-     * @apiParam {String} [url] Only has a function if t is set to "addImgBG", then it has to be set to: [rootUrl]/uploads/[ReadOnlyWid]/[ReadOnlyWid]_[date].png
-     * @apiParam {String} [c] Color: Only used if color is needed (pen, rect, circle, addTextBox ... )
-     * @apiParam {String} [th] Thickness: Only used if Thickness is needed (pen, rect ... )
-     * @apiParam {Number[]} d has different function on every tool you use:
-     * fx. pen or addImgBG: [width, height, left, top, rotation]
-     *
-     * @apiSuccess {String} body returns "done" as text
-     * @apiError {Number} 401 Unauthorized
-     */
     app.get("/api/drawToWhiteboard", function (req, res) {
         let query = escapeAllContentStrings(req["query"]);
         const wid = query["wid"];
         const at = query["at"]; //accesstoken
         if (!wid || ReadOnlyBackendService.isReadOnly(wid)) {
-            res.status(401); //Unauthorized
+            res.status(401); //Неавторизованный
             res.end();
         }
 
         if (accessToken === "" || accessToken == at) {
             const broadcastTo = (wid) => io.compress(false).to(wid).emit("drawToWhiteboard", query);
-            // broadcast to current whiteboard
+            // транслирует на текущю доску
             broadcastTo(wid);
-            // broadcast the same query to the associated read-only whiteboard
+            // транслирует тот же контент на связанную доску только для чтения
             const readOnlyId = ReadOnlyBackendService.getReadOnlyId(wid);
             broadcastTo(readOnlyId);
-            s_whiteboard.handleEventsAndData(query); //save whiteboardchanges on the server
+            s_whiteboard.handleEventsAndData(query); //сохранение изменений доски на сервере
             res.send("done");
         } else {
-            res.status(401); //Unauthorized
+            res.status(401); //Неавторизованный
             res.end();
         }
     });
@@ -247,7 +164,6 @@ function startBackendServer(port) {
             }
             let imagedata = fields["imagedata"];
             if (imagedata && imagedata != "") {
-                //Save from base64 data
                 imagedata = imagedata
                     .replace(/^data:image\/png;base64,/, "")
                     .replace(/^data:image\/jpeg;base64,/, "");
@@ -259,7 +175,6 @@ function startBackendServer(port) {
                         callback(err);
                     } else {
                         if (webdavaccess) {
-                            //Save image to webdav
                             if (enableWebdav) {
                                 saveImageToWebdav(
                                     savingPath,
@@ -321,7 +236,7 @@ function startBackendServer(port) {
         let whiteboardId = null;
         socket.on("disconnect", function () {
             WhiteboardInfoBackendService.leave(socket.id, whiteboardId);
-            socket.compress(false).broadcast.to(whiteboardId).emit("refreshUserBadges", null); //Removes old user Badges
+            socket.compress(false).broadcast.to(whiteboardId).emit("refreshUserBadges", null); //Удаляет старые значки пользователей
         });
 
         socket.on("drawToWhiteboard", function (content) {
@@ -333,12 +248,12 @@ function startBackendServer(port) {
             if (accessToken === "" || accessToken == content["at"]) {
                 const broadcastTo = (wid) =>
                     socket.compress(false).broadcast.to(wid).emit("drawToWhiteboard", content);
-                // broadcast to current whiteboard
+                // транслирует на текущую доскуу
                 broadcastTo(whiteboardId);
-                // broadcast the same content to the associated read-only whiteboard
+                // транслирует тот же контент на связанную доску только для чтения
                 const readOnlyId = ReadOnlyBackendService.getReadOnlyId(whiteboardId);
                 broadcastTo(readOnlyId);
-                s_whiteboard.handleEventsAndData(content); //save whiteboardchanges on the server
+                s_whiteboard.handleEventsAndData(content); //сохраняет изменения доски на сервере
             } else {
                 socket.emit("wrongAccessToken", true);
             }
@@ -358,7 +273,7 @@ function startBackendServer(port) {
                     },
                 });
 
-                socket.join(whiteboardId); //Joins room name=wid
+                socket.join(whiteboardId);
                 const screenResolution = content["windowWidthHeight"];
                 WhiteboardInfoBackendService.join(socket.id, whiteboardId, screenResolution);
             } else {
@@ -379,7 +294,6 @@ function startBackendServer(port) {
         });
     });
 
-    //Prevent cross site scripting (xss)
     function escapeAllContentStrings(content, cnt) {
         if (!cnt) cnt = 0;
 
@@ -397,7 +311,6 @@ function startBackendServer(port) {
         return content;
     }
 
-    //Sanitize strings known to be encoded and decoded
     function purifyEncodedStrings(content) {
         if (content.hasOwnProperty("t") && content["t"] === "setTextboxText") {
             return purifyTextboxTextInContent(content);
@@ -438,7 +351,6 @@ function startBackendServer(port) {
     }
 
     process.on("unhandledRejection", (error) => {
-        // Will print "unhandledRejection err is not defined"
         console.log("unhandledRejection", error.message);
     });
 }

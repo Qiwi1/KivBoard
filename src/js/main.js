@@ -38,7 +38,7 @@ const myUsername = urlParams.get("username") || "Пользователь" + (Ma
 const accessToken = urlParams.get("accesstoken") || "";
 const copyfromwid = urlParams.get("copyfromwid") || "";
 
-// Custom Html Title
+// Пользовательский HTML-заголовок
 const title = urlParams.get("title");
 if (title) {
     document.title = decodeURIComponent(title);
@@ -144,7 +144,7 @@ function showBasicAlert(html, newOptions) {
 
 function initWhiteboard() {
     $(document).ready(function () {
-        // by default set in readOnly mode
+        // По умолчанию установлен в режиме только для чтения
         ReadOnlyService.activateReadOnlyMode();
 
         if (urlParams.get("webdav") === "true") {
@@ -152,29 +152,24 @@ function initWhiteboard() {
         }
 
         whiteboard.loadWhiteboard("#whiteboardContainer", {
-            //Load the whiteboard
+            //Загрузка доски
             whiteboardId: whiteboardId,
             username: btoa(encodeURIComponent(myUsername)),
             backgroundGridUrl: "./images/" + ConfigService.backgroundGridImage,
             sendFunction: function (content) {
                 if (ReadOnlyService.readOnlyActive) return;
-                //ADD IN LATER THROUGH CONFIG
-                // if (content.t === 'cursor') {
-                //     if (whiteboard.drawFlag) return;
-                // }
                 content["at"] = accessToken;
                 signaling_socket.emit("drawToWhiteboard", content);
                 InfoService.incrementNbMessagesSent();
             },
         });
 
-        // request whiteboard from server
+        // запрос данных доски с сервера
         $.get(subdir + "/api/loadwhiteboard", { wid: whiteboardId, at: accessToken }).done(
             function (data) {
                 console.log(data);
                 whiteboard.loadData(data);
                 if (copyfromwid && data.length == 0) {
-                    //Copy from witheboard if current is empty and get parameter is given
                     $.get(subdir + "/api/loadwhiteboard", {
                         wid: copyfromwid,
                         at: accessToken,
@@ -193,12 +188,12 @@ function initWhiteboard() {
         });
 
         /*----------------/
-        Whiteboard actions
+        Действия на доске
         /----------------*/
 
         var tempLineTool = false;
         var strgPressed = false;
-        //Handle key actions
+        //Обработка ключевых действий
         $(document).on("keydown", function (e) {
             if (e.which == 16) {
                 if (whiteboard.tool == "pen" && !strgPressed) {
@@ -218,7 +213,7 @@ function initWhiteboard() {
                         shortcutFunctions.setTool_line();
                     }
                 }
-                whiteboard.pressedKeys["shift"] = true; //Used for straight lines...
+                whiteboard.pressedKeys["shift"] = true; //автоматическая линия
             } else if (e.which == 17) {
                 strgPressed = true;
             }
@@ -237,7 +232,7 @@ function initWhiteboard() {
             }
         });
 
-        //Load keybindings from keybinds.js to given functions
+        //Загрузка привязки клавиш из keybinds.js к заданным функциям
         Object.entries(keybinds).forEach(([key, functionName]) => {
             const associatedShortcutFunction = shortcutFunctions[functionName];
             if (associatedShortcutFunction) {
@@ -253,7 +248,7 @@ function initWhiteboard() {
             }
         });
 
-        // whiteboard clear button
+        // Кнопка "Очистить"
         $("#whiteboardTrashBtn")
             .off("click")
             .click(function () {
@@ -274,21 +269,21 @@ function initWhiteboard() {
                 whiteboard.clearWhiteboard();
             });
 
-        // undo button
+        // Кнопка "Назад"
         $("#whiteboardUndoBtn")
             .off("click")
             .click(function () {
                 whiteboard.undoWhiteboardClick();
             });
 
-        // redo button
+        // Кнопка "Вперёд"
         $("#whiteboardRedoBtn")
             .off("click")
             .click(function () {
                 whiteboard.redoWhiteboardClick();
             });
 
-        // view only
+        // Кнопка "Только просмотр"
         $("#whiteboardLockBtn")
             .off("click")
             .click(() => {
@@ -302,7 +297,7 @@ function initWhiteboard() {
         $("#whiteboardUnlockBtn").hide();
         $("#whiteboardLockBtn").show();
 
-        // switch tool
+        // Инструмент переключения
         $(".whiteboard-tool")
             .off("click")
             .click(function () {
@@ -313,7 +308,7 @@ function initWhiteboard() {
                 if (activeTool == "mouse" || activeTool == "recSelect") {
                     $(".activeToolIcon").empty();
                 } else {
-                    $(".activeToolIcon").html($(this).html()); //Set Active icon the same as the button icon
+                    $(".activeToolIcon").html($(this).html()); 
                 }
 
                 if (activeTool == "text" || activeTool == "stickynote") {
@@ -328,7 +323,7 @@ function initWhiteboard() {
                 }
             });
 
-        // upload image button
+        // Кнопка "Загрузить изображение"
         $("#addImgToCanvasBtn")
             .off("click")
             .click(function () {
@@ -347,7 +342,7 @@ function initWhiteboard() {
                 );
             });
 
-        // save image as imgae
+        // Кнопка "Сохранить как картинку"
         $("#saveAsImageBtn")
             .off("click")
             .click(function () {
@@ -357,9 +352,8 @@ function initWhiteboard() {
                         drawBackgroundGrid: ConfigService.drawBackgroundGrid,
                     },
                     function (imgData) {
-                        var w = window.open("about:blank"); //Firefox will not allow downloads without extra window
+                        var w = window.open("about:blank"); //Firefox не разрешает загрузку без дополнительного окна
                         setTimeout(function () {
-                            //FireFox seems to require a setTimeout for this to work.
                             var a = document.createElement("a");
                             a.href = imgData;
                             a.download = "whiteboard." + ConfigService.imageDownloadFormat;
@@ -374,15 +368,14 @@ function initWhiteboard() {
                 );
             });
 
-        // save image to json containing steps
+        // Кнопка "Загрузить JSON файл как доску "
         $("#saveAsJSONBtn")
             .off("click")
             .click(function () {
                 var imgData = whiteboard.getImageDataJson();
 
-                var w = window.open("about:blank"); //Firefox will not allow downloads without extra window
+                var w = window.open("about:blank"); //Firefox не разрешает загрузку без дополнительного окна
                 setTimeout(function () {
-                    //FireFox seems to require a setTimeout for this to work.
                     var a = document.createElement("a");
                     a.href = window.URL.createObjectURL(new Blob([imgData], { type: "text/json" }));
                     a.download = "whiteboard.json";
@@ -489,11 +482,10 @@ function initWhiteboard() {
                     okBtnText: "Назад",
                     headercolor: "#0082c9",
                 });
-                // render newly added icons
                 dom.i2svg();
             });
 
-        // upload json containing steps
+        // Кнопка "Сохранить в виде файла JSON"
         $("#uploadJsonBtn")
             .off("click")
             .click(function () {
@@ -508,11 +500,11 @@ function initWhiteboard() {
                     const basePath = `${protocol}//${host}${pathname}`;
                     const getParams = new URLSearchParams(search);
 
-                    // Clear ursername from get parameters
+                    // Удаление имени пользователя из строки запроса
                     getParams.delete("username");
 
                     if (whiteboardId) {
-                        // override whiteboardId value in URL
+                        // переопределение значения whiteboardId в URL-адресе
                         getParams.set("whiteboardid", whiteboardId);
                     }
 
@@ -527,8 +519,6 @@ function initWhiteboard() {
                         .remove();
                 }
 
-                // UI related
-                // clear message
                 $("#shareWhiteboardDialogMessage").toggleClass("displayNone", true);
 
                 $("#shareWhiteboardDialog").toggleClass("displayNone", false);
@@ -596,7 +586,7 @@ function initWhiteboard() {
             $(this).val("");
         });
 
-        // On thickness slider change
+        // Изменение ползунка толщины
         $("#whiteboardThicknessSlider").on("input", function () {
             if (ReadOnlyService.readOnlyActive) return;
             whiteboard.setStrokeThickness($(this).val());
@@ -611,7 +601,7 @@ function initWhiteboard() {
             $("#whiteboardThicknessSlider").val(savedThickness);
         }
 
-        // handle drag&drop
+        // Функция drag&drop
         var dragCounter = 0;
         $("#whiteboardContainer").on("dragenter", function (e) {
             if (ReadOnlyService.readOnlyActive) return;
@@ -696,25 +686,24 @@ function initWhiteboard() {
                                         headercolor: "#0082c9",
                                     });
 
-                                    // render newly added icons
                                     dom.i2svg();
 
                                     showPDFPageAsImage(1);
                                     function showPDFPageAsImage(pageNumber) {
-                                        // Fetch the page
+                                        // Получение страницы
                                         pdf.getPage(pageNumber).then(function (page) {
                                             console.log("Загружен");
 
                                             var scale = 1.5;
                                             var viewport = page.getViewport({ scale: scale });
 
-                                            // Prepare canvas using PDF page dimensions
+                                            // Подготовка доски, используя размер страницы
                                             var canvas = $("<canvas></canvas>")[0];
                                             var context = canvas.getContext("2d");
                                             canvas.height = viewport.height;
                                             canvas.width = viewport.width;
 
-                                            // Render PDF page into canvas context
+                                            // Обновление страницы PDF в виде картинки
                                             var renderContext = {
                                                 canvasContext: context,
                                                 viewport: viewport,
@@ -730,10 +719,10 @@ function initWhiteboard() {
                                     }
                                 },
                                 function (reason) {
-                                    // PDF loading error
+                                    // Ошибка загрузки PDF
 
                                     showBasicAlert(
-                                        "Ошибка загрузки PDF в виде изображения! Убедитесь, что это pdf файл!"
+                                        "Ошибка загрузки PDF в виде изображения! Убедитесь, что это PDF файл!"
                                     );
                                     console.error(reason);
                                 }
@@ -744,7 +733,6 @@ function initWhiteboard() {
                         showBasicAlert("Либо PDF, либо изображение!");
                     }
                 } else {
-                    //File from other browser
 
                     var fileUrl = e.originalEvent.dataTransfer.getData("URL");
                     var imageUrl = e.originalEvent.dataTransfer.getData("text/html");
@@ -765,7 +753,7 @@ function initWhiteboard() {
                                     if (isImageFileName(url) || url.startsWith("http")) {
                                         whiteboard.addImgToCanvasByUrl(url);
                                     } else {
-                                        uploadImgAndAddToWhiteboard(url); //Last option maybe its base64
+                                        uploadImgAndAddToWhiteboard(url);
                                     }
                                 } else {
                                     showBasicAlert("Можно загрузить только картинку!");
@@ -778,7 +766,7 @@ function initWhiteboard() {
         }
 
         $("#whiteboardContainer").on("drop", function (e) {
-            //Handle drop
+            //Обработка сброса
             if (ReadOnlyService.readOnlyActive) return;
 
             handleFileUploadEvent(e);
@@ -908,9 +896,8 @@ function initWhiteboard() {
         }
         intBgColorPicker();
 
-        // on startup select mouse
+        // При запуске идет выбор мыши
         shortcutFunctions.setTool_mouse();
-        // fix bug cursor not showing up
         whiteboard.refreshCursorAppearance();
 
         if (process.env.NODE_ENV === "production") {
@@ -925,13 +912,13 @@ function initWhiteboard() {
             InfoService.displayInfo();
         }
 
-        // In any case, if we are on read-only whiteboard we activate read-only mode
+        // В любом случае, если мы находимся на доске только для чтения, мы активируем режим только для чтения.
         if (ConfigService.isReadOnly) ReadOnlyService.activateReadOnlyMode();
 
         $("body").show();
     });
 
-    //Prevent site from changing tab on drag&drop
+    //Запрет сайта менять вкладку при перетаскивании
     window.addEventListener(
         "dragover",
         function (e) {
@@ -966,7 +953,7 @@ function initWhiteboard() {
                 const rootUrl = document.URL.substr(0, document.URL.lastIndexOf("/"));
                 whiteboard.addImgToCanvasByUrl(
                     `${rootUrl}/uploads/${correspondingReadOnlyWid}/${filename}`
-                ); //Add image to canvas
+                ); //Добавление картинки на доску
                 console.log("Успешно!");
             },
             error: function (err) {
@@ -1008,21 +995,21 @@ function initWhiteboard() {
         });
     }
 
-    // verify if filename refers to an image
+    // Проверка формата файла 
     function isImageFileName(filename) {
         var extension = filename.split(".")[filename.split(".").length - 1];
         var known_extensions = ["png", "jpg", "jpeg", "gif", "tiff", "bmp", "webp"];
         return known_extensions.includes(extension.toLowerCase());
     }
 
-    // verify if filename refers to an pdf
+    // Проверка формата файла, отличающегося от .PDF
     function isPDFFileName(filename) {
         var extension = filename.split(".")[filename.split(".").length - 1];
         var known_extensions = ["pdf"];
         return known_extensions.includes(extension.toLowerCase());
     }
 
-    // verify if given url is url to an image
+    // Проверка, является ли данный URL-адрес URL-адресом изображения
     function isValidImageUrl(url, callback) {
         var img = new Image();
         var timer = null;
@@ -1040,7 +1027,7 @@ function initWhiteboard() {
         img.src = url;
     }
 
-    // handle pasting from clipboard
+    // Обработка вставки из буфера обмена
     window.addEventListener("paste", function (e) {
         if ($(".basicalert").length > 0 || !!e.origin) {
             return;
@@ -1049,17 +1036,15 @@ function initWhiteboard() {
             var items = e.clipboardData.items;
             var imgItemFound = false;
             if (items) {
-                // Loop through all items, looking for any kind of image
                 for (var i = 0; i < items.length; i++) {
                     if (items[i].type.indexOf("image") !== -1) {
                         imgItemFound = true;
-                        // We need to represent the image as a file,
                         var blob = items[i].getAsFile();
 
                         var reader = new window.FileReader();
                         reader.readAsDataURL(blob);
                         reader.onloadend = function () {
-                            console.log("Uploading image!");
+                            console.log("Загрузка картинки!");
                             let base64data = reader.result;
                             uploadImgAndAddToWhiteboard(base64data);
                         };

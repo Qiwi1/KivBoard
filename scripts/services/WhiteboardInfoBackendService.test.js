@@ -15,7 +15,6 @@ test("Clients lifetime same wid", () => {
     expect(WhiteboardInfoBackendService.getNbClientOnWhiteboard(wid)).toBe(1);
 
     WhiteboardInfoBackendService.leave("toto", wid, null);
-    // no more user on whiteboard
     expect(WhiteboardInfoBackendService.getNbClientOnWhiteboard(wid)).toBe(null);
 });
 
@@ -38,7 +37,6 @@ test("Clients lifetime both wid and readonly wid", () => {
     expect(WhiteboardInfoBackendService.getNbClientOnWhiteboard(readOnlyWid)).toBe(1);
 
     WhiteboardInfoBackendService.leave("toto", wid, null);
-    // no more user on whiteboard
     expect(WhiteboardInfoBackendService.getNbClientOnWhiteboard(wid)).toBe(null);
     expect(WhiteboardInfoBackendService.getNbClientOnWhiteboard(readOnlyWid)).toBe(null);
 });

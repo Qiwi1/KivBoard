@@ -3,7 +3,7 @@ import { getCurrentTimeMs } from "../utils";
 import ConfigService from "./ConfigService";
 
 /**
- * Class to handle all the throttling logic
+ * Класс для обработки всей логики регулирования
  */
 class ThrottlingService {
     /**
@@ -23,11 +23,11 @@ class ThrottlingService {
     }
 
     /**
-     * Helper to throttle events based on the configuration.
-     * Only if checks are ok, the onSuccess callback will be called.
+     * Помощник для регулирования событий на основе конфигурации.
+     * Только если проверки в порядке, будет вызван обратный вызов onSuccess
      *
-     * @param {Point} newPosition New point position to base the throttling on
-     * @param {function()} onSuccess Callback called when the throttling is successful
+     * @param {Point} 
+     * @param {function()} 
      */
     throttle(newPosition, onSuccess) {
         const newTime = getCurrentTimeMs();

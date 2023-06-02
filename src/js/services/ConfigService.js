@@ -1,7 +1,7 @@
 import { getThrottling } from "./ConfigService.utils";
 
 /**
- * Class to hold the configuration sent by the backend
+ * Класс для хранения конфигурации, отправленной серверной частью
  */
 class ConfigService {
     /**
@@ -13,7 +13,7 @@ class ConfigService {
     }
 
     /**
-     * Associated read-only id for this whiteboad
+     * Связанный идентификатор только для чтения для этой доски
      * @type {string}
      */
     #correspondingReadOnlyWid = "";
@@ -90,7 +90,7 @@ class ConfigService {
     }
 
     /**
-     * Init the service from the config sent by the server
+     * Иницииация службы из конфигурации, отправленной сервером
      *
      * @param {object} configFromServer
      */
@@ -120,11 +120,11 @@ class ConfigService {
         this.#correspondingReadOnlyWid = correspondingReadOnlyWid;
         this.#isReadOnly = isReadOnly;
 
-        console.log("Whiteboard config from server:", configFromServer, "parsed:", this);
+        console.log("Конфигурация доски с сервера:", configFromServer, "проанализировано:", this);
     }
 
     /**
-     * Refresh config that depends on the number of user connected to whiteboard
+     * Обновление конфигурации, которая зависит от количества пользователей, подключенных к доске.
      *
      * @param {number} userCount
      */

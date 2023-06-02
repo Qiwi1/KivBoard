@@ -1,21 +1,21 @@
 FROM node:16 as base
 
-# Create app directory
+# Создание каталога сайта
 RUN mkdir -p /opt/app
 WORKDIR /opt/app
 
-# Install app dependencies
+# Установка расширений
 COPY ./package.json package-lock.json ./
 RUN npm ci
 
-# Bundle frontend
+# Интерфейс пакета
 COPY src ./src
 COPY assets ./assets
 COPY config ./config
 RUN npm run build
 
 #####################
-# Final image
+# Окончательный Image
 #####################
 
 FROM node:16-alpine
@@ -23,7 +23,7 @@ ENV NODE_ENV=prod
 
 MAINTAINER cracker0dks
 
-# Create app directory
+# Содание директории
 RUN mkdir -p /opt/app
 WORKDIR /opt/app
 

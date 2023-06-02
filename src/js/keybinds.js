@@ -1,9 +1,8 @@
 /* -----------
- KEYBINDINGS
+ Комбинации
 ----------- */
 
-//> defmod is "command" on OS X and "ctrl" elsewhere
-//Advanced Example: 'defmod-k j' -> For this to fire you have to first press both ctrl and k, and then j.
+//> defmod — это «команда» в OS X и «ctrl» в других местах.
 
 const keybinds = {
     // 'key(s)' : 'function',

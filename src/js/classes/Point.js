@@ -47,24 +47,24 @@ class Point {
     }
 
     /**
-     * Get a Point object from an event
+     * Получение объекта Pont из события
      * @param {event} e
      * @returns {Point}
      */
     static fromEvent(e) {
-        // the epsilon hack is required to detect touches
+        // для обнаружения касаний требуется эпсилон-хак
         const epsilon = 0.0001;
         let x = (e.offsetX || e.pageX - $(e.target).offset().left) + epsilon;
         let y = (e.offsetY || e.pageY - $(e.target).offset().top) + epsilon;
 
         if (Number.isNaN(x) || Number.isNaN(y) || (x === epsilon && y === epsilon)) {
-            // if it's a touch actually
+            // если это действительно прикосновение
             if (e.touches && e.touches.length && e.touches.length > 0) {
                 const touch = e.touches[0];
                 x = touch.clientX - $("#mouseOverlay").offset().left;
                 y = touch.clientY - $("#mouseOverlay").offset().top;
             } else {
-                // if it's a touchend event
+                // если это событие touchend
                 return Point.#lastKnownPos;
             }
         }
@@ -74,7 +74,7 @@ class Point {
     }
 
     /**
-     * Compute euclidean distance between points
+     * Вычисление расстояния между точками
      *
      * @param {Point} otherPoint
      * @returns {number}

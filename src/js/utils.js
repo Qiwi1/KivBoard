@@ -1,5 +1,5 @@
 /**
- * Compute the euclidean distance between two points
+ * Вычисление расстояния между двумя точками
  * @param {Point} p1
  * @param {Point} p2
  */
@@ -8,7 +8,7 @@ export function computeDist(p1, p2) {
 }
 
 /**
- * Return the current time in ms since 1970
+ * Возвращает текущее время в мс с 1970 года.
  * @returns {number}
  */
 export function getCurrentTimeMs() {

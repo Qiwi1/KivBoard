@@ -1,7 +1,7 @@
 import ConfigService from "./ConfigService";
 
 /**
- * Class the handle the read-only logic
+ * Класс отвечающий за блокировку панели инструментов
  */
 class ReadOnlyService {
     /**
@@ -21,7 +21,7 @@ class ReadOnlyService {
     }
 
     /**
-     * Activate read-only mode
+     * Активация режима только для чтения
      */
     activateReadOnlyMode() {
         this.#readOnlyActive = true;
@@ -39,7 +39,7 @@ class ReadOnlyService {
     }
 
     /**
-     * Deactivate read-only mode
+     * Выключение режима только для чтения
      */
     deactivateReadOnlyMode() {
         if (ConfigService.isReadOnly) return;
@@ -52,7 +52,7 @@ class ReadOnlyService {
         $("#whiteboardUnlockBtn").show();
         $("#whiteboardLockBtn").hide();
 
-        // restore previously selected tool
+        // Восстановление выбранного ранее инструмента
         const { previousToolHtmlElem } = this;
         if (previousToolHtmlElem) previousToolHtmlElem.click();
     }

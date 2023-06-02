@@ -1,7 +1,7 @@
 import ConfigService from "./ConfigService";
 
 /**
- * Class the handle the information about the whiteboard
+ * Класс обрабатывает информацию о доске
  */
 class InfoService {
     /**
@@ -13,7 +13,7 @@ class InfoService {
     }
 
     /**
-     * Holds the number of user connected to the server
+     * Содержит количество пользователей, подключенных к серверу
      *
      * @type {number}
      */
@@ -47,7 +47,7 @@ class InfoService {
     }
 
     /**
-     * Holds the interval Id
+     * Содержит идентификатор интервала
      * @type {number}
      */
     #refreshInfoIntervalId = undefined;
@@ -61,7 +61,7 @@ class InfoService {
      */
     updateInfoFromServer({ nbConnectedUsers, smallestScreenResolution = undefined }) {
         if (this.#nbConnectedUsers !== nbConnectedUsers) {
-            // Refresh config service parameters on nb connected user change
+            // Обновление параметра службы конфигурации при изменении подключенного пользователя
             ConfigService.refreshUserCountDependant(nbConnectedUsers);
         }
         this.#nbConnectedUsers = nbConnectedUsers;
@@ -92,7 +92,7 @@ class InfoService {
     }
 
     /**
-     * Show the info div
+     * Показ информации
      */
     displayInfo() {
         $("#whiteboardInfoContainer").toggleClass("displayNone", false);
@@ -101,14 +101,13 @@ class InfoService {
 
         this.refreshDisplayedInfo();
         this.#refreshInfoIntervalId = setInterval(() => {
-            // refresh only on a specific interval to reduce
-            // refreshing cost
+            // Обновление только через определенный интервал, чтобы снизить нагрузку обновления
             this.refreshDisplayedInfo();
         }, ConfigService.refreshInfoInterval);
     }
 
     /**
-     * Hide the info div
+     * Скрыть информацию
      */
     hideInfo() {
         $("#whiteboardInfoContainer").toggleClass("displayNone", true);
@@ -122,7 +121,7 @@ class InfoService {
     }
 
     /**
-     * Switch between hiding and showing the info div
+     * Перключатель информации
      */
     toggleDisplayInfo() {
         const { infoAreDisplayed } = this;

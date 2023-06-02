@@ -9,7 +9,7 @@ import "./icons";
 import main from "./main";
 
 $(document).ready(function () {
-    // Set correct width height on mobile browsers
+    // Установление правильной высоты и ширины в мобилке
     const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
     if (isChrome) {
         $("head").append(

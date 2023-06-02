@@ -16,7 +16,7 @@ if (cliArgs["config"]) {
 const config = deepMergeConfigs(defaultConfig, userConfig);
 
 /**
- * Update the config based on the CLI args
+ * Обновление конфигурации на основе аргументов CLI.
  * @param {object} startArgs
  */
 function updateConfigFromStartArgs(startArgs) {
@@ -42,7 +42,7 @@ function updateConfigFromStartArgs(startArgs) {
 }
 
 /**
- * Update the config based on the env variables
+ * Обновляет конфиг на основе переменных env
  */
 function updateConfigFromEnv() {
     function deprecateEnv(key, callback) {
@@ -50,9 +50,9 @@ function updateConfigFromEnv() {
         if (val) {
             console.warn(
                 "\x1b[33m\x1b[1m",
-                `Setting config values (${key}) from the environment is deprecated. ` +
-                    "This ability will be removed in the next major version. " +
-                    "You should use the config file. "
+                `Установка значений конфигурации (${key}) из среды устарела. ` +
+                "Эта способность будет удалена в следующей основной версии." +
+                "Вы должны использовать файл конфигурации. "
             );
             callback(val);
         }
@@ -66,14 +66,12 @@ function updateConfigFromEnv() {
     deprecateEnv("webdav", () => (config.backend.enableWebdav = true));
 }
 
-// compatibility layer
-// FIXME: remove this in next major
+// Уровень совместимости
 updateConfigFromEnv();
-// FIXME: remove this in next major
 updateConfigFromStartArgs(cliArgs);
 
 if (!isConfigValid(config, true)) {
-    throw new Error("Config is not valid. Check logs for details");
+    throw new Error("Конфигурация недействительна. Подробности смотрите в журналах");
 }
 
 if (!process.env.JEST_WORKER_ID) {

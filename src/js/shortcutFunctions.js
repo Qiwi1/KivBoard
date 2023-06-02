@@ -3,7 +3,7 @@ import ReadOnlyService from "./services/ReadOnlyService";
 
 /**
  * @param {function} callback
- * @param {boolean} readOnlySensitive should the shortcut function be active event when the whiteboard is in read-only mode
+ * @param {boolean} readOnlySensitive должна быть активна функция ярлыка, когда доска находится в режиме только для чтения.
  */
 function defineShortcut(callback, readOnlySensitive = true) {
     return () => {

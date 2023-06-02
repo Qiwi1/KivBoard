@@ -11,7 +11,6 @@ test("Simple throttling config", () => {
 });
 
 test("Complex throttling config", () => {
-    // mix ordering
     const throttling = [
         { fromUserCount: 100, minDistDelta: 100, maxFreq: 1 },
         { fromUserCount: 0, minDistDelta: 1, maxFreq: 1 },
